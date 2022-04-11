@@ -6,12 +6,12 @@
 
     <Grid RowDefinitions="Auto,*">
         <Image Source="xamarin_logo.png"
-               BackgroundColor="{OnPlatform iOS=LightSlateGray, Android=#2196F3, UWP=#9933FF}"
+               BackgroundColor="{StaticResource AppPrimaryColor}"
                VerticalOptions="Center"
                HeightRequest="64" />
 
         <StackLayout Grid.Row="1"
-                     Margin="20"
+                     Margin="{StaticResource PageMargin}"
                      Spacing="20">
             <Label FontSize="22">
                 <Label.FormattedText>

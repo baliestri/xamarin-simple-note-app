@@ -3,9 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="NotesXamarin.Views.NoteEntryPage">
 
-    <StackLayout Margin="20">
+    <ContentPage.Resources>
+        <Style TargetType="{x:Type Editor}">
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource AppBackgroundColor}" />
+        </Style>
+    </ContentPage.Resources>
+
+    <StackLayout Margin="{StaticResource PageMargin}">
         <Editor Placeholder="Enter your note"
                 Text="{Binding Text}"
+                BackgroundColor="{StaticResource TertiaryColor}"
+                TextColor="{StaticResource PrimaryColor}"
                 HeightRequest="100" />
 
         <Grid ColumnDefinitions="*,*">
