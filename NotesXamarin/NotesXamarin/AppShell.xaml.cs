@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using NotesXamarin.Views;
+using Xamarin.Forms;
 
 namespace NotesXamarin
 {
@@ -7,7 +8,7 @@ namespace NotesXamarin
         public AppShell()
         {
             InitializeComponent();
+            Routing.RegisterRoute(nameof(NoteEntryPage), typeof(NoteEntryPage));
         }
-
     }
 }

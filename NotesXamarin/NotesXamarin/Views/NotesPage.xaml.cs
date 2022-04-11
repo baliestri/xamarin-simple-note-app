@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
+using NotesXamarin.Models;
 using Xamarin.Forms;
 
 namespace NotesXamarin.Views
@@ -12,22 +14,40 @@ namespace NotesXamarin.Views
         public NotesPage()
         {
             InitializeComponent();
-
-            if (File.Exists(_filename))
-                editor.Text = File.ReadAllText(_filename);
         }
 
-        void OnSaveButtonClicked(object sender, EventArgs e)
+        protected override void OnAppearing()
         {
-            File.WriteAllText(_filename, editor.Text);
+            base.OnAppearing();
+
+            var notes = new List<Note>();
+
+            var files = Directory.EnumerateFiles(App.FolderPath, "*.notes.txt");
+            foreach (var filename in files)
+            {
+                notes.Add(new Note
+                {
+                    Filename = filename,
+                    Text = File.ReadAllText(filename),
+                    Date = File.GetCreationTime(filename)
+                });
+            }
+
+            collectionView.ItemsSource = notes.OrderBy(x => x.Date).ToList();
         }
 
-        void OnDeleteButtonClicked(object sender, EventArgs e)
+        async void OnAddClicked(object sender, EventArgs e)
         {
-            if (File.Exists(_filename))
-                File.Delete(_filename);
+            await Shell.Current.GoToAsync(nameof(NoteEntryPage));
+        }
 
-            editor.Text = string.Empty;
+        async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection != null)
+            {
+                var note = (Note)e.CurrentSelection.FirstOrDefault();
+                await Shell.Current.GoToAsync($"{nameof(NoteEntryPage)}?{nameof(NoteEntryPage.ItemId)}={note.Filename}");
+            }
         }
     }
 }
