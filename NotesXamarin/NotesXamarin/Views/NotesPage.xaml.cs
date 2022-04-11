@@ -16,24 +16,11 @@ namespace NotesXamarin.Views
             InitializeComponent();
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            var notes = new List<Note>();
-
-            var files = Directory.EnumerateFiles(App.FolderPath, "*.notes.txt");
-            foreach (var filename in files)
-            {
-                notes.Add(new Note
-                {
-                    Filename = filename,
-                    Text = File.ReadAllText(filename),
-                    Date = File.GetCreationTime(filename)
-                });
-            }
-
-            collectionView.ItemsSource = notes.OrderBy(x => x.Date).ToList();
+            collectionView.ItemsSource = await App.Database.GetNotesAsync();
         }
 
         async void OnAddClicked(object sender, EventArgs e)
@@ -46,7 +33,7 @@ namespace NotesXamarin.Views
             if (e.CurrentSelection != null)
             {
                 var note = (Note)e.CurrentSelection.FirstOrDefault();
-                await Shell.Current.GoToAsync($"{nameof(NoteEntryPage)}?{nameof(NoteEntryPage.ItemId)}={note.Filename}");
+                await Shell.Current.GoToAsync($"{nameof(NoteEntryPage)}?{nameof(NoteEntryPage.ItemId)}={note.Id.ToString()}");
             }
         }
     }

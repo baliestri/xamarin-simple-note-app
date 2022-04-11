@@ -16,20 +16,16 @@ namespace NotesXamarin.Views
             BindingContext = new Note();
         }
 
-        void LoadNote(string filename)
+        async void LoadNote(string itemId)
         {
             try
             {
-                var note = new Note
-                {
-                    Filename = filename,
-                    Text = File.ReadAllText(filename),
-                    Date = File.GetCreationTime(filename)
-                };
+                var id = Convert.ToInt32(itemId);
+                var note = await App.Database.GetNoteAsync(id);
 
                 BindingContext = note;
             }
-            catch (Exception)
+            catch
             {
                 Console.WriteLine("Failed to load note.");
             }
@@ -39,15 +35,10 @@ namespace NotesXamarin.Views
         {
             var note = (Note)BindingContext;
 
-            if (string.IsNullOrWhiteSpace(note.Filename))
-            {
-                var filename = Path.Combine(App.FolderPath, $"{Path.GetRandomFileName()}.notes.txt");
-                File.WriteAllText(filename, note.Text);
-            }
-            else
-            {
-                File.WriteAllText(note.Filename, note.Text);
-            }
+            note.Date = DateTime.UtcNow;
+
+            if (!string.IsNullOrWhiteSpace(note.Text))
+                await App.Database.SaveNoteAsync(note);
 
             await Shell.Current.GoToAsync("..");
         }
@@ -55,11 +46,7 @@ namespace NotesXamarin.Views
         async void OnDeleteButtonClicked(object sender, EventArgs e)
         {
             var note = (Note)BindingContext;
-
-            if (File.Exists(note.Filename))
-            {
-                File.Delete(note.Filename);
-            }
+            await App.Database.DeleteNoteAsync(note);
 
             await Shell.Current.GoToAsync("..");
         }
